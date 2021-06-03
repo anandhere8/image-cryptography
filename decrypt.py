@@ -2,9 +2,9 @@ from PIL import Image
 from random import randint
 import numpy
 import sys
-from helper import *
-
-im = Image.open('encrypted_images/' + sys.argv[1])
+from module import *
+filename = sys.argv[1]
+im = Image.open('image_encrypted/' + filename)
 pix = im.load()
 
 r = []
@@ -22,28 +22,41 @@ for i in range(im.size[0]):
 
 m = im.size[0]
 n = im.size[1]
+#
+# print('Enter value of Kr')
+# Kr = list(map(int, (input().split(' '))))
+# Kc = list(map(int, (input().split(' '))))
 
-Kr = []
-Kc = []
 
-print('Enter value of Kr')
 
-for i in range(m):
-	Kr.append(int(input()))
+# for i in range(m):
+# 	Kr.append(int(input()))
+#
+# print('Enter value of Kc')
+# for i in range(n):
+# 	Kc.append(int(input()))
 
-print('Enter value of Kc')
-for i in range(n):
-	Kc.append(int(input()))
+# print('Enter value of ITER_MAX')
+# ITER_MAX = int(input())
 
-print('Enter value of ITER_MAX')
-ITER_MAX = int(input())
-
+keypath = 'keys/' + filename.split('.')[0] + '.txt'
+with open(keypath) as f:
+    content = f.readlines()
+# you may also want to remove whitespace characters like `\n` at the end of each line
+content = [x.strip() for x in content]
+# print(content)
+f.close()
+Kr = list(map(int, (content[0].split(' '))))
+Kc = list(map(int, (content[1].split(' '))))
+ITER_MAX = int(content[2])
 
 for iterations in range(ITER_MAX):
 	for j in range(n):
 		for i in range(m):
 			if(j%2==0):
+
 				r[i][j] = r[i][j] ^ Kr[i]
+				# exit(0)
 				g[i][j] = g[i][j] ^ Kr[i]
 				b[i][j] = b[i][j] ^ Kr[i]
 			else:
@@ -108,7 +121,7 @@ for i in range(m):
 	for j in range(n):
 		pix[i,j] = (r[i][j],g[i][j],b[i][j])
 
-im.save('decrypted_images/' + sys.argv[1])
+im.save('image_decrypted/' + sys.argv[1])
 
-
+print("DONE")
 
